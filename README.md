@@ -370,7 +370,7 @@ The automated tests currently validate:
 Example successful test execution:
 
 ```text
-================== 7 passed in 0.22s ==================
+================== 8 passed in 0.22s ==================
 ```
 
 ---
@@ -393,9 +393,11 @@ Example successful test execution:
 
 - The service assumes MLB Stats API availability and does not currently implement caching, retries, or rate limiting.
 
-- In-progress game enrichment is designed to utilize MLB live feed endpoints when live game data is available.
+- In-progress game data is enriched using MLB live feed endpoints when a game is currently live.
 
 - Dates are expected in `YYYY-MM-DD` format and are interpreted using the server’s local date context when omitted.
+
+- Game states outside the three primary required states, such as postponed games or manager challenges, are returned with their source state so the frontend can handle them explicitly.
 
 ## Design Decisions
 
@@ -426,7 +428,7 @@ Example successful test execution:
 
 ## Future Improvements
 
-- Add full live-game enrichment for in-progress games using MLB live feed data.
+- Expand live game handling for additional edge cases such as delays, postponed games, or unavailable live-feed data.
 
 - Add caching for affiliate and schedule responses to reduce repeated calls to MLB Stats API.
 

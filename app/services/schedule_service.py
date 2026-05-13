@@ -104,10 +104,9 @@ def build_team_schedule_response(affiliate_teams: list[dict], schedule_payload: 
             })
             continue
 
-
         game_pk = game.get("gamePk")
         live_feed = live_feeds.get(game_pk)
-        
+
         game_details = build_game_details(team_id, game, live_feed)
 
         response.append({
@@ -197,6 +196,48 @@ def build_not_started_game(team_id: int, game: dict) -> dict:
     }
 
 
+def get_live_game_details(live_feed: dict | None) -> dict:
+    if not live_feed:
+        return {
+            "inning": None,
+            "outs": None,
+            "runnersOnBase": [],
+            "currentPitcher": None,
+            "batterUp": None,
+        }
+
+    live_data = live_feed.get("liveData", {})
+    linescore = live_data.get("linescore", {})
+    plays = live_data.get("plays", {})
+    current_play = plays.get("currentPlay", {})
+    matchup = current_play.get("matchup", {})
+
+    offense = linescore.get("offense", {})
+
+    runners = []
+
+    for base in ["first", "second", "third"]:
+        runner = offense.get(base)
+
+        if runner:
+            runners.append({
+                "base": base,
+                "id": runner.get("id"),
+                "name": runner.get("fullName")
+            })
+
+    return {
+        "inning": {
+            "number": linescore.get("currentInning"),
+            "half": linescore.get("inningHalf")
+        },
+        "outs": linescore.get("outs"),
+        "runnersOnBase": runners,
+        "currentPitcher": build_pitcher(matchup.get("pitcher")),
+        "batterUp": build_pitcher(matchup.get("batter")),
+    }
+
+
 def build_in_progress_game(team_id: int, game: dict, live_feed: dict | None = None) -> dict:
     """
     Builds a response for a game that is currently in progress, including Opponent, venue, current score, inning, outs, runners on base, current pitcher, and batter up-to-bat
@@ -216,44 +257,6 @@ def build_in_progress_game(team_id: int, game: dict, live_feed: dict | None = No
         "score": get_score(game),
         **live_details
     }
-
-
-def get_live_game_details(live_feed: dict | None) -> dict:
-    if not live_feed:
-        return {
-            "inning": None,
-            "outs": None,
-            "runnersOnBase": None,
-            "currentPitcher": None,
-            "batterUp": None,
-        }
-    linescore = live_feed.get("liveData", {}).get("linescore", {})
-    current_play = live_feed.get("liveData", {}).get(
-        "plays", {}).get("currentPlay", {})
-    matchup = current_play.get("matchup", {})
-
-    offense = linescore.get("offense", {})
-
-    runners = []
-    for base in ["first", "second", "third"]:
-        runner = offense.get(base)
-        if runner:
-            runners.append({
-                "base": base,
-                "id": runner.get("id"),
-                "name": runner.get("fullName")
-            })
-
-        return {
-            "inning": {
-                "number": linescore.get("currentInning"),
-                "half": linescore.get("currentInningHalf")
-            },
-            "outs": linescore.get("outs"),
-            "runnersOnBase": runners,
-            "currentPitcher": build_pitcher(matchup.get("pitcher")),
-            "batterUp": build_pitcher(matchup.get("batter")),
-        }
 
 
 def build_completed_game(team_id: int, game: dict) -> dict:
@@ -276,14 +279,14 @@ def build_game_details(team_id: int, game: dict, live_feed: dict | None = None) 
     """
     Builds a response containing detailed game information based on the game state for the specified team ID and game data
     """
-    
+
     raw_state = game.get("status", {}).get("detailedState", "")
     state = normalize_game_state(raw_state)
 
     if state == "Not Started":
         return build_not_started_game(team_id, game)
     if state == "In Progress":
-        return build_in_progress_game(team_id, game)
+        return build_in_progress_game(team_id, game, live_feed)
     if state == "Completed":
         return build_completed_game(team_id, game)
 

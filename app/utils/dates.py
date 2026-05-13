@@ -18,4 +18,5 @@ def resolve_date(date_str: str | None) -> str:
         return parsed_date.strftime("%Y-%m-%d")
     except ValueError:
         raise HTTPException(
-            status_code=400, detail="Invalid date format. Expected YYYY-MM-DD.")
+            status_code=400,
+            detail="Invalid date format. Expected YYYY-MM-DD.")
