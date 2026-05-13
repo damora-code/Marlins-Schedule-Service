@@ -67,6 +67,7 @@ tests/
 ├── test_dates.py
 ├── test_mlb_api.py
 ├── test_schedule_service.py
+├── test_routes.py
 ```
 
 
@@ -437,8 +438,6 @@ Example successful test execution:
 - Add structured logging for debugging and monitoring.
 
 - Add Pydantic response models for stronger response validation and improved API documentation.
-
-- Add integration tests for the `/schedule` endpoint.
 
 - Add mocked live-feed tests for in-progress game scenarios.
 

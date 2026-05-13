@@ -1,6 +1,5 @@
 from app.services.schedule_service import (
     extract_affiliate_teams,
-    get_games_from_schedule,
     find_game_for_team,
     build_team_schedule_response,
 )
