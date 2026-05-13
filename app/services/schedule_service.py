@@ -197,6 +197,11 @@ def build_not_started_game(team_id: int, game: dict) -> dict:
 
 
 def get_live_game_details(live_feed: dict | None) -> dict:
+    """
+    Extracts live game details such as current inning, outs, runners on base, current pitcher, and
+    batter up-to-bat from the live feed data for a game that is currently in progress
+    """
+    
     if not live_feed:
         return {
             "inning": None,

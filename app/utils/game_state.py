@@ -6,7 +6,7 @@ def normalize_game_state(state: str) -> str:
     if state in ["Scheduled", "Pre-Game", "Preview"]:
         return "Not Started"
 
-    if state in ["In Progress","Manager challenge"]:
+    if state in ["In Progress","Manager Challenge"]:
         return "In Progress"
 
     if state == "Final":
