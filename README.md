@@ -91,7 +91,7 @@ tests/
 ### Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/damora-code/Marlins-Schedule-Service.git
 cd marlins-schedule-service
 ```
 
